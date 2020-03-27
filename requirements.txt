@@ -2,3 +2,5 @@ orm
 databases
 asyncio-nats-client
 typing-extensions
+aioredis
+pytest

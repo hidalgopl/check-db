@@ -11,6 +11,3 @@ class BlobRefDTO(TypedDict):
     att: int
     out_att: int
     contact_data: int
-
-    def create_pretty_report(self):
-        return f"""#BlobStorage.ID: {self.blob_id}\n"""

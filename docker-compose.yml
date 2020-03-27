@@ -27,15 +27,11 @@ services:
   redis:
     image: redis
     container_name: cache
-    expose:
-      - 6379
+    ports:
+      - "6379:6379"
 
   nats:
     image: nats:latest
-    #    labels:
-    #      - "traefik.enable=true"
-    #      - "traefik.http.routers.whoami.rule=Host(`nats.secureapi.dev`)"
-    #      - "traefik.http.routers.whoami.tls.certresolver=myresolver"
     ports:
       - "4222:4222"
     command: "-DV"

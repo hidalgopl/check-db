@@ -13,3 +13,9 @@ fetch_from_db:
 look_for_incosistent:
 	python worker.py
 .PHONY: look_for_incosistent
+
+test:
+	python -m pytest tests -v
+
+a_mess:
+	python mess_data.py

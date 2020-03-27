@@ -1,21 +1,30 @@
 
 ## Architecture
-Solution contains 3 main components
-1. DB getter  - service which periodically calls DBs, puts the results together and publishes them in message queue.
-2. Message queue - component which stores DB entries to be checked if any inconsistencies occurs.
-3. Checker - here is where business logic lives. It listens to new messages from queue and process them one at the time. Can be easily scaled horizontally.
-
+Solution contains 4 main components
+1. DB getter  - service which calls DBs, puts the results together and publishes them in message queue.
+2. Message queue [NATS](https://nats.io) - decouples DB getter and worker, allows to run multiple workers & getters. NATS also ensures that only one worker is processing published message.
+3. Worker - here is where business logic lives. It listens to new messages from queue and process them one at the time. Can be easily scaled horizontally.
+4. Key-value store [Redis](https://redis.io/documentation) - this is used to store last checked BlobStorageID.
 
 ## Considerations
 
-### Efficiency
-This may be not very efficient, as I'm not SQL queries expert. In real life I'd consult my queries with someone who has more knowledge in this topic.
-
-### Speed
-Should be good.
+### Efficiency & speed
+This may be not very efficient, as I'm far from being SQL queries expert. This is the biggest issue in this solution.
 
 ### Resiliency
+It's pretty resilient as checkers dump last checked index to Redis.
 
 ### Scaling
-Since DB objects are dumped to message queue, it's really easy to scale the workers.
+You can scale both checker & worker horizontally. Only limitation here is DB resistant for such heavy load of queries.
 
+## Running
+You'll need docker-compose installed.
+1. run `make install_deps` to install required python libraries.
+2. `make setup_env` will turn on docker-compose services (NATS, both databases & redis).
+3. `make a_mess` will introduce inconsistencies in DB.
+4. `make look_for_incosistent` will run single worker which will wait for new messages in queue & process them. It prints inconsistent entries to stdout, can be easily dumped to a file.
+5. `make fetch_from_db` is a service which runs DB queries and publishes BlobRefDTO objects to message queue.
+
+
+## Testing
+You can run unit tests for business logic via `make tests`.
