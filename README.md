@@ -1,9 +1,9 @@
 
 ## Architecture
 Solution contains 4 main components
-1. DB getter  - service which calls DBs, puts the results together and publishes them in message queue.
+1. [DB getter](checker.py)  - service which calls DBs, puts the results together and publishes them in message queue.
 2. Message queue [NATS](https://nats.io) - decouples DB getter and worker, allows to run multiple workers & getters. NATS also ensures that only one worker is processing published message.
-3. Worker - here is where business logic lives. It listens to new messages from queue and process them one at the time. Can be easily scaled horizontally.
+3. [Worker](worker.py) - here is where business logic lives. It listens to new messages from queue and process them one at the time. Can be easily scaled horizontally.
 4. Key-value store [Redis](https://redis.io/documentation) - this is used to store last checked BlobStorageID.
 
 ## Considerations
@@ -12,10 +12,10 @@ Solution contains 4 main components
 This may be not very efficient, as I'm far from being SQL queries expert. This is the biggest issue in this solution.
 
 ### Resiliency
-It's pretty resilient as checkers dump last checked index to Redis.
+It's pretty resilient as getters dump last checked index to Redis.
 
 ### Scaling
-You can scale both checker & worker horizontally. Only limitation here is DB resistant for such heavy load of queries.
+You can scale both getter & worker horizontally. Only limitation here is DB resistant for such heavy load of queries.
 
 ## Running
 You'll need docker-compose installed.
